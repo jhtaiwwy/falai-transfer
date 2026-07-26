@@ -1,0 +1,28 @@
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "发来"
+    },
+    {
+      "name": "module_desc",
+      "value": "局域网文件互传"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "发来：局域网文件互传"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "发来"
+    },
+    {
+      "name": "write_imagevideo_reason",
+      "value": "用于保存接收的图片和视频到相册"
+    },
+    {
+      "name": "detect_gesture_reason",
+      "value": "用于智能握持感知，自动调整界面布局以适应单手操作"
+    }
+  ]
+}

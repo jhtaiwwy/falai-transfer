@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "ohos-module-entry": {
+    "SELECT_TARGET": "default",
+    "MODULE_BUILD_DIR": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build",
+    "TARGETS": {
+      "default": {
+        "SOURCE_ROOT": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\src\\main",
+        "RESOURCES_PATH": [
+          "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\src\\main\\resources"
+        ],
+        "BUILD_PATH": {
+          "OUTPUT_PATH": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\outputs\\default",
+          "INTERMEDIA_PATH": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\intermediates",
+          "JS_ASSETS_PATH": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\intermediates\\loader_out\\default",
+          "JS_LITE_ASSETS_PATH": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\intermediates\\loader_out_lite\\default",
+          "RES_PATH": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\intermediates\\res\\default",
+          "RES_PROFILE_PATH": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\intermediates\\res\\default\\resources\\base\\profile",
+          "ETS_SUPER_VISUAL_PATH": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\cache\\default\\default@CompileArkTS\\esmodule",
+          "JS_SUPER_VISUAL_PATH": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\cache\\default\\default@CompileJS\\jsbundle",
+          "WORKER_LOADER": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\intermediates\\loader\\default\\loader.json",
+          "MANIFEST_JSON": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\intermediates\\manifest\\default",
+          "OUTPUT_METADATA_JSON": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\intermediates\\hap_metadata\\default\\output_metadata.json",
+          "SOURCE_MAP_DIR": "E:\\mobileApp\\file-transfer\\harmonyos\\entry\\build\\default\\intermediates\\source_map\\default"
+        },
+        "BUILD_OPTION": {
+          "debuggable": true
+        }
+      }
+    },
+    "BUILD_OPTION": {
+      "default-default": {
+        "debuggable": true,
+        "copyFrom": "default",
+        "name": "debug"
+      }
+    },
+    "BUILD_PROFILE_OPT": {
+      "apiType": "stageMode",
+      "buildOption": {},
+      "buildOptionSet": [
+        {
+          "name": "release",
+          "arkOptions": {
+            "obfuscation": {
+              "ruleOptions": {
+                "enable": true,
+                "files": [
+                  "./obfuscation-rules.txt"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "name": "default"
+        },
+        {
+          "name": "debug"
+        }
+      ],
+      "targets": [
+        {
+          "name": "default"
+        }
+      ]
+    },
+    "BUILD_CACHE_DIR": ""
+  },
+  "ohos-project": {
+    "SELECT_PRODUCT_NAME": "default",
+    "MODULE_BUILD_DIR": "E:\\mobileApp\\file-transfer\\harmonyos\\build",
+    "BUNDLE_NAME": "com.falai.transfer",
+    "VERSION_CODE": 1,
+    "VERSION_NAME": "1.0",
+    "BUILD_PATH": {
+      "OUTPUT_PATH": "E:\\mobileApp\\file-transfer\\harmonyos\\build\\outputs\\default"
+    },
+    "MODULES": [
+      {
+        "name": "entry",
+        "srcPath": "E:\\mobileApp\\file-transfer\\harmonyos\\entry",
+        "targets": [
+          {
+            "name": "default",
+            "applyToProducts": [
+              "default"
+            ]
+          }
+        ],
+        "belongProjectPath": "E:\\mobileApp\\file-transfer\\harmonyos"
+      }
+    ],
+    "PROFILE_OPT": {
+      "app": {
+        "signingConfigs": [
+          {
+            "name": "default",
+            "type": "HarmonyOS",
+            "material": {
+              "certpath": "C:\\Users\\jht\\.ohos\\config\\default_harmonyos_gkWnWSdKyarDaapaFjo6lWUnWd-Dmw_NG_zsZWWmi2M=.cer",
+              "keyAlias": "debugKey",
+              "keyPassword": "0000001BD77AF00D6CD49E6FBF3D60C3B30C6A0ACA3DB7D60CF79C0CD8E86D483E2FC246EA579819429734",
+              "profile": "C:\\Users\\jht\\.ohos\\config\\default_harmonyos_gkWnWSdKyarDaapaFjo6lWUnWd-Dmw_NG_zsZWWmi2M=.p7b",
+              "signAlg": "SHA256withECDSA",
+              "storeFile": "C:\\Users\\jht\\.ohos\\config\\default_harmonyos_gkWnWSdKyarDaapaFjo6lWUnWd-Dmw_NG_zsZWWmi2M=.p12",
+              "storePassword": "0000001B88779F7AE4C17E376064BE525E5D4560831217344499A49705BB7773C0AA388A91F2C0AB30B9FB"
+            }
+          }
+        ],
+        "products": [
+          {
+            "name": "default",
+            "signingConfig": "default",
+            "compatibleSdkVersion": "6.1.1(24)",
+            "runtimeOS": "HarmonyOS",
+            "targetSdkVersion": "6.1.1(24)"
+          }
+        ],
+        "buildModeSet": [
+          {
+            "name": "debug"
+          },
+          {
+            "name": "release"
+          }
+        ]
+      },
+      "modules": [
+        {
+          "name": "entry",
+          "srcPath": "./entry",
+          "targets": [
+            {
+              "name": "default",
+              "applyToProducts": [
+                "default"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "CONFIG_PROPERTIES": {
+      "enableSignTask": true,
+      "skipNativeIncremental": false,
+      "hvigor.keepDependency": true
+    },
+    "OVERALL_PROJECT_PATHS": [
+      "E:\\mobileApp\\file-transfer\\harmonyos"
+    ],
+    "BUILD_CACHE_DIR": ""
+  }
+}

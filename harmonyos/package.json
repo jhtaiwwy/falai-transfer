@@ -1,0 +1,11 @@
+{
+  "name": "icon-converter",
+  "version": "1.0.0",
+  "description": "SVG to PNG converter for file transfer app icon",
+  "scripts": {
+    "convert": "node convert_svg_to_png.js"
+  },
+  "dependencies": {
+    "sharp": "^0.33.0"
+  }
+}
