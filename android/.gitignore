@@ -1,0 +1,23 @@
+# Build outputs
+build/
+app/build/
+
+# Gradle
+.gradle/
+local.properties
+
+# Kotlin
+.kotlin/
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated files
+*.apk
+*.aab
+*.aar
