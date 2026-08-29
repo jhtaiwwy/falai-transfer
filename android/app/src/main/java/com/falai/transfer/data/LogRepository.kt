@@ -19,7 +19,8 @@ data class TransferLog(
     val resultText: String,         // 成功 / 已取消 / 对方拒绝 / 失败原因
     val durationMs: Long,
     val avgSpeedBps: Double,
-    val contentUri: String? = null,   // 单文件接收成功时的落点，用于点击预览
+    val contentUri: String? = null,   // 接收成功时首个文件的落点，用于点击预览/定位文件夹
+    val fileCount: Int = 1,           // 本次传输的文件数量，用于区分单文件打开 / 多文件打开文件夹
 ) {
     fun toJson(): JSONObject = JSONObject()
         .put("id", id)
@@ -33,6 +34,7 @@ data class TransferLog(
         .put("duration", durationMs)
         .put("avgSpeed", avgSpeedBps)
         .put("uri", contentUri)
+        .put("count", fileCount)
 
     companion object {
         fun fromJson(j: JSONObject) = TransferLog(
@@ -47,6 +49,7 @@ data class TransferLog(
             durationMs = j.optLong("duration"),
             avgSpeedBps = j.optDouble("avgSpeed"),
             contentUri = j.optString("uri").takeIf { it.isNotBlank() },
+            fileCount = j.optInt("count", 1),
         )
     }
 }

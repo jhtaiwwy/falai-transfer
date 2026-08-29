@@ -34,7 +34,7 @@ class TransferServer(
 
         fun onProgress(fileName: String, fileIndex: Int, fileCount: Int, transferredBytes: Long)
 
-        /** 一次会话结束（无论成败）。只有接受过的会话 needLog=true；savedUri 为单文件会话的落点 */
+        /** 一次会话结束（无论成败）。只有接受过的会话 needLog=true；savedUri 为接收成功时首个文件的落点 */
         fun onFinished(peerName: String, fileNames: List<String>, totalBytes: Long, success: Boolean, error: String?, needLog: Boolean, savedUri: String?)
 
         fun isBusy(): Boolean
@@ -246,6 +246,7 @@ class TransferServer(
             metaFile(tid).delete()
             success = true
             if (importedUris.size == 1) savedUri = importedUris[0].ifBlank { null }
+            else if (importedUris.isNotEmpty()) savedUri = importedUris.first { it.isNotBlank() }
         } catch (e: Exception) {
             error = e.message ?: e.javaClass.simpleName
         } finally {

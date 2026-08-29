@@ -1,8 +1,6 @@
 package com.falai.transfer.ui
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,6 +47,7 @@ import com.falai.transfer.core.formatDuration
 import com.falai.transfer.core.formatSpeed
 import com.falai.transfer.core.formatTime
 import com.falai.transfer.data.TransferLog
+import com.falai.transfer.transfer.FileLocationOpener
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,19 +134,8 @@ private fun LogCard(log: TransferLog) {
     val context = LocalContext.current
     Card(
         Modifier.fillMaxWidth().clickable(enabled = log.contentUri != null) {
-            // 接收成功的单文件记录：调系统查看器预览
-            val uri = log.contentUri ?: return@clickable
-            try {
-                val intent = Intent(Intent.ACTION_VIEW).apply {
-                    setDataAndType(Uri.parse(uri), "*/*")
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-                context.startActivity(intent)
-            } catch (_: ActivityNotFoundException) {
-                Toast.makeText(context, "没有可打开此文件的应用", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Toast.makeText(context, "打开失败：${e.message}", Toast.LENGTH_SHORT).show()
-            }
+            val msg = FileLocationOpener.open(context, log.contentUri, log.fileCount)
+            if (msg != null) Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
         }
     ) {
         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -179,7 +167,7 @@ private fun LogCard(log: TransferLog) {
                             append(" · ")
                             append(formatSpeed(log.avgSpeedBps))
                         }
-                        if (log.contentUri != null) append(" · 点击预览")
+                        if (log.contentUri != null) append(" · 点击打开")
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (log.success) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)

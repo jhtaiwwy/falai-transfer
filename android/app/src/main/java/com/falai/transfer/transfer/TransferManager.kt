@@ -162,6 +162,7 @@ class TransferManager private constructor(private val context: Context) {
                     resultText = "已拒绝",
                     durationMs = 0,
                     avgSpeedBps = 0.0,
+                    fileCount = req.fileCount,
                 )
             )
         }
@@ -308,6 +309,7 @@ class TransferManager private constructor(private val context: Context) {
             durationMs = duration,
             avgSpeedBps = if (duration > 0 && success) total / (duration / 1000.0) else 0.0,
             contentUri = contentUri,
+            fileCount = files.size,
         )
     }
 

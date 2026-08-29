@@ -2,9 +2,11 @@ package com.falai.transfer.transfer
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
@@ -133,6 +135,55 @@ object FileSaver {
                 }
                 ImportResult(target.absolutePath, null)
             }
+        }
+    }
+}
+
+/**
+ * 打开日志里的接收落点：
+ * - 多文件：用系统文件管理器打开所在文件夹（并定位到首个文件）；无文件管理器可用时回退打开首个文件
+ * - 单文件：直接调系统查看器打开文件
+ * 返回失败原因描述；成功返回 null。
+ */
+object FileLocationOpener {
+    fun open(context: Context, uriString: String?, fileCount: Int): String? {
+        if (uriString.isNullOrBlank()) return "找不到该文件"
+        val uri = Uri.parse(uriString)
+        if (fileCount > 1 && openFolder(context, uri)) return null
+        return if (openFile(context, uri)) null else "没有可打开此文件的应用"
+    }
+
+    private fun openFolder(context: Context, fileUri: Uri): Boolean {
+        try {
+            val docUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                MediaStore.getDocumentUri(context, fileUri)
+            } else fileUri
+            if (docUri == null) return false
+            val docId = DocumentsContract.getDocumentId(docUri)
+            // 父目录 id 即去掉最后一段文件名
+            val parentUri = DocumentsContract.buildDocumentUri(docUri.authority, docId.substringBeforeLast('/'))
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(parentUri, "vnd.android.document/directory")
+                putExtra(DocumentsContract.EXTRA_INITIAL_URI, docUri)  // 在文件夹里定位到该文件
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            context.startActivity(intent)
+            return true
+        } catch (_: Exception) {
+            return false
+        }
+    }
+
+    private fun openFile(context: Context, uri: Uri): Boolean {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "*/*")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            context.startActivity(intent)
+            return true
+        } catch (_: Exception) {
+            return false
         }
     }
 }
