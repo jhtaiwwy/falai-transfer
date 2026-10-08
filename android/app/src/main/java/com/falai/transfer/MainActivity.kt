@@ -8,6 +8,19 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +45,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.falai.transfer.ui.IncomingRequestDialog
 import com.falai.transfer.ui.LogTab
@@ -41,11 +58,39 @@ import com.falai.transfer.ui.TransferProgressDialog
 import com.falai.transfer.ui.TransferTab
 import com.falai.transfer.ui.theme.FaLaiTheme
 
+/**
+ * 与鸿蒙版（Index.ets handleTabChange）一致的 Tab 切换动画：
+ * - 旧页：淡出 + 缩小到 0.92 + 反向横移 40dp
+ * - 新页：从 0.95 淡入放大到 1.0
+ * - 350ms FastOutSlowInEasing 曲线
+ */
+@OptIn(ExperimentalAnimationApi::class)
+private fun tabTransition(
+    currentIndex: Int,
+    targetIndex: Int,
+    density: Density,
+): ContentTransform {
+    val direction = if (targetIndex > currentIndex) 1 else -1
+    val slidePx = with(density) { 40.dp.roundToPx() }
+    val spec = tween<Float>(durationMillis = 350, easing = FastOutSlowInEasing)
+    val enter: EnterTransition =
+        fadeIn(animationSpec = spec) +
+            scaleIn(initialScale = 0.95f, animationSpec = spec)
+    val exit: ExitTransition =
+        fadeOut(animationSpec = spec) +
+            scaleOut(targetScale = 0.92f, animationSpec = spec) +
+            slideOutHorizontally(
+                animationSpec = tween<IntOffset>(durationMillis = 350, easing = FastOutSlowInEasing),
+                targetOffsetX = { -direction * slidePx },
+            )
+    return enter togetherWith exit
+}
+
 class MainActivity : ComponentActivity() {
     private val vm: MainViewModel by viewModels()
 
     private val pickMedia = registerForActivityResult(
-        ActivityResultContracts.PickMultipleVisualMedia(20)
+        ActivityResultContracts.PickMultipleVisualMedia()
     ) { uris -> vm.onFilesPicked(uris) }
 
     private val pickFiles = registerForActivityResult(
@@ -149,30 +194,41 @@ fun MainScreen(
                 }
             }
             Box(Modifier.fillMaxSize()) {
-                when (tab) {
-                    0 -> TransferTab(
-                        deviceName = deviceName,
-                        localIp = vm.localIp,
-                        devices = devices,
-                        whitelist = whitelist,
-                        columns = columns,
-                        onPickMedia = onPickMedia,
-                        onPickFiles = onPickFiles,
-                    )
+                // 与鸿蒙版一致的 Tab 切换动画：
+                // 旧页淡出 + 缩小到 0.92 + 反向横移 40dp，新页从 0.95 淡入放大到 1.0，
+                // 350ms FastOutSlowInEasing 曲线，流畅不生硬。
+                val density = LocalDensity.current
+                AnimatedContent(
+                    targetState = tab,
+                    contentKey = { it },
+                    transitionSpec = { tabTransition(initialState, targetState, density) },
+                    label = "tabContent",
+                ) { currentTab ->
+                    when (currentTab) {
+                        0 -> TransferTab(
+                            deviceName = deviceName,
+                            localIp = vm.localIp,
+                            devices = devices,
+                            whitelist = whitelist,
+                            columns = columns,
+                            onPickMedia = onPickMedia,
+                            onPickFiles = onPickFiles,
+                        )
 
-                    1 -> LogTab(
-                        logs = logs,
-                        columns = columns,
-                        onDelete = vm::deleteLog,
-                        onClear = vm::clearLogs,
-                    )
+                        1 -> LogTab(
+                            logs = logs,
+                            columns = columns,
+                            onDelete = vm::deleteLog,
+                            onClear = vm::clearLogs,
+                        )
 
-                    else -> MineTab(
-                        deviceName = deviceName,
-                        whitelist = whitelist,
-                        onSaveName = vm::setDeviceName,
-                        onRemoveWhitelist = vm::removeWhitelist,
-                    )
+                        else -> MineTab(
+                            deviceName = deviceName,
+                            whitelist = whitelist,
+                            onSaveName = vm::setDeviceName,
+                            onRemoveWhitelist = vm::removeWhitelist,
+                        )
+                    }
                 }
             }
         }

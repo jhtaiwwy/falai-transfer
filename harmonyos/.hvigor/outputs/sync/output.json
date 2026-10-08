@@ -100,11 +100,11 @@
             "material": {
               "certpath": "C:\\Users\\jht\\.ohos\\config\\default_harmonyos_gkWnWSdKyarDaapaFjo6lWUnWd-Dmw_NG_zsZWWmi2M=.cer",
               "keyAlias": "debugKey",
-              "keyPassword": "0000001BD77AF00D6CD49E6FBF3D60C3B30C6A0ACA3DB7D60CF79C0CD8E86D483E2FC246EA579819429734",
+              "keyPassword": "0000001A68B34F27C2FFED3C7082835C000E0047CCC25A7CB199FCBF1D2E309C34DA3B5EBBEA3E0577E7",
               "profile": "C:\\Users\\jht\\.ohos\\config\\default_harmonyos_gkWnWSdKyarDaapaFjo6lWUnWd-Dmw_NG_zsZWWmi2M=.p7b",
               "signAlg": "SHA256withECDSA",
               "storeFile": "C:\\Users\\jht\\.ohos\\config\\default_harmonyos_gkWnWSdKyarDaapaFjo6lWUnWd-Dmw_NG_zsZWWmi2M=.p12",
-              "storePassword": "0000001B88779F7AE4C17E376064BE525E5D4560831217344499A49705BB7773C0AA388A91F2C0AB30B9FB"
+              "storePassword": "0000001A79D935F05FA45D022BFD999535AC9DFA7C37BCBEB5F0C96F01C04EE217B3B6964660E764474A"
             }
           }
         ],

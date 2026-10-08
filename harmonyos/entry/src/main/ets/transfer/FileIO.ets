@@ -17,21 +17,21 @@ import { Protocol } from '../core/Protocol';
 
 // ---------- 选择器 ----------
 
-/** 选照片/视频，多选最多 20 个 */
+/** 选照片/视频，多选（500 为系统选择器允许的最大值，即不设应用层限制） */
 export async function pickMediaFiles(context: common.Context): Promise<ResolvedFileItem[]> {
   const photoPicker = new photoAccessHelper.PhotoViewPicker();
   const options = new photoAccessHelper.PhotoSelectOptions();
   options.MIMEType = photoAccessHelper.PhotoViewMIMETypes.IMAGE_VIDEO_TYPE;
-  options.maxSelectNumber = 20;
+  options.maxSelectNumber = 500;
   const result = await photoPicker.select(options);
   return resolvePickedUris(result.photoUris);
 }
 
-/** 选任意文件，多选最多 20 个 */
+/** 选任意文件，多选（500 为系统选择器允许的最大值，即不设应用层限制） */
 export async function pickDocumentFiles(context: common.Context): Promise<ResolvedFileItem[]> {
   const docPicker = new picker.DocumentViewPicker(context);
   const options = new picker.DocumentSelectOptions();
-  options.maxSelectNumber = 20;
+  options.maxSelectNumber = 500;
   const uris = await docPicker.select(options);
   return resolvePickedUris(uris);
 }
