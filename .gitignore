@@ -1,3 +1,28 @@
+# IDE
 .idea/
-/windows/发来.exe
-/windows/发来_0.1.0_x64-setup.exe
+.vscode/
+
+# Android
+android/.gradle/
+android/.kotlin/
+android/build/
+android/app/build/
+android/local.properties
+
+# HarmonyOS
+harmonyos/.hvigor/
+harmonyos/build/
+harmonyos/entry/build/
+harmonyos/oh_modules/
+harmonyos/local.properties
+
+# Windows / Tauri
+windows/falai-transfer/node_modules/
+windows/falai-transfer/dist/
+windows/falai-transfer/src-tauri/target/
+windows/发来.exe
+windows/发来_0.1.0_x64-setup.exe
+
+# 工作区记忆，不公开
+.workbuddy/
+windows/.workbuddy/

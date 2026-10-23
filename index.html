@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>发来 · 三端局域网直传 | 1024 造物挑战</title>
+<meta name="description" content="同一个 WiFi 下，安卓、鸿蒙、Windows 三端直接互传文件。不经过任何服务器，不限速，不压缩。" />
+<meta name="theme-color" content="#070A0F" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 108 108'%3E%3Crect width='108' height='108' rx='24' fill='%23000'/%3E%3Cpath d='M54,24 C56.5,42 66,49.5 80,52 C66,54.5 56.5,62 54,80 C51.5,62 42,54.5 28,52 C42,49.5 51.5,42 54,24 Z' fill='%23F2C14E'/%3E%3C/svg%3E" />
+<style>
+  :root {
+    --void: #070A0F;
+    --panel: #0C121B;
+    --panel-2: #111927;
+    --line: rgba(255, 255, 255, 0.09);
+    --line-soft: rgba(255, 255, 255, 0.05);
+    --signal: #4AE3B5;
+    --gold: #F2C14E;
+    --ash: #79859A;
+    --paper: #E9EEF5;
+    --sans: "HarmonyOS Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+    --max: 1120px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--void);
+    color: var(--paper);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.026) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.026) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 90% 55% at 50% 0%, #000 25%, transparent 78%);
+    mask-image: radial-gradient(ellipse 90% 55% at 50% 0%, #000 25%, transparent 78%);
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 28px;
+    position: relative;
+    z-index: 1;
+  }
+
+  a { color: inherit; }
+
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* ── nav ───────────────────────────────────────────── */
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 1px solid var(--line-soft);
+    background: rgba(7, 10, 15, 0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .nav-in {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    flex: none;
+    display: block;
+  }
+
+  .brand {
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    font-size: 15px;
+  }
+
+  .nav-tag {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ash);
+    text-transform: uppercase;
+  }
+
+  .nav-tag b {
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  /* ── hero ──────────────────────────────────────────── */
+
+  .hero {
+    padding-top: 88px;
+    padding-bottom: 64px;
+    display: grid;
+    grid-template-columns: 1.16fr 0.84fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    color: var(--signal);
+    text-transform: uppercase;
+    margin: 0 0 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--signal);
+    opacity: 0.7;
+  }
+
+  h1 {
+    margin: 0 0 26px;
+    font-size: clamp(40px, 4.5vw, 64px);
+    line-height: 1.06;
+    letter-spacing: -0.045em;
+    font-weight: 800;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+
+  .lede {
+    margin: 0 0 34px;
+    font-size: 17px;
+    line-height: 1.75;
+    color: #B4BECC;
+    max-width: 30em;
+  }
+
+  .lede strong {
+    color: var(--paper);
+    font-weight: 600;
+  }
+
+  .facts {
+    display: flex;
+    gap: 40px;
+    padding-top: 26px;
+    border-top: 1px solid var(--line);
+  }
+
+  .fact-n {
+    font-family: var(--mono);
+    font-size: 26px;
+    line-height: 1;
+    color: var(--paper);
+    letter-spacing: -0.02em;
+  }
+
+  .fact-n span {
+    font-size: 13px;
+    color: var(--ash);
+    margin-left: 4px;
+    letter-spacing: 0;
+  }
+
+  .fact-l {
+    margin-top: 7px;
+    font-size: 12px;
+    color: var(--ash);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── status panel ──────────────────────────────────── */
+
+  .panel {
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.9);
+  }
+
+  .panel-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--line-soft);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--ash);
+    text-transform: uppercase;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal);
+    box-shadow: 0 0 0 3px rgba(74, 227, 181, 0.12);
+    flex: none;
+  }
+
+  .panel-bar .sp { margin-left: auto; opacity: 0.55; }
+
+  .panel-body { padding: 20px 18px 22px; }
+
+  .self {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .self-ip {
+    font-family: var(--mono);
+    font-size: 19px;
+    letter-spacing: -0.01em;
+  }
+
+  .self-name { font-size: 12px; color: var(--ash); }
+
+  .peers {
+    list-style: none;
+    margin: 14px 0 18px;
+    padding: 0;
+    display: grid;
+    gap: 9px;
+  }
+
+  .peers li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: #C3CCD9;
+  }
+
+  .peers .d {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--signal);
+    flex: none;
+  }
+
+  .peers .ip { color: var(--ash); margin-left: auto; font-size: 11.5px; }
+
+  .sending {
+    background: rgba(74, 227, 181, 0.05);
+    border: 1px solid rgba(74, 227, 181, 0.16);
+    border-radius: 10px;
+    padding: 13px 14px;
+  }
+
+  .sending-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 12.5px;
+    margin-bottom: 10px;
+    gap: 12px;
+  }
+
+  .sending-top .fn { color: #D6DEE9; }
+  .sending-top .pct { font-family: var(--mono); color: var(--signal); font-size: 13px; }
+
+  .track {
+    height: 4px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+  }
+
+  .track i {
+    display: block;
+    height: 100%;
+    width: 68%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, rgba(74, 227, 181, 0.55), var(--signal));
+    background-size: 200% 100%;
+    animation: flow 2.4s linear infinite;
+  }
+
+  @keyframes flow {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .sending-meta {
+    margin-top: 9px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ash);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── sections ──────────────────────────────────────── */
+
+  .sec {
+    padding-top: 76px;
+    padding-bottom: 76px;
+    border-top: 1px solid var(--line-soft);
+    position: relative;
+  }
+
+  .sec-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 56px;
+    align-items: end;
+    margin-bottom: 44px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: clamp(26px, 3.2vw, 38px);
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+    font-weight: 750;
+  }
+
+  .sec-note {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: #8B95A5;
+  }
+
+  /* ── demo ──────────────────────────────────────────── */
+
+  .demo {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #0B111A, #080C13);
+    overflow: hidden;
+  }
+
+  .demo-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    flex-wrap: wrap;
+  }
+
+  .demo-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--ash);
+    text-transform: uppercase;
+  }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--void);
+    background: var(--signal);
+    border: 0;
+    border-radius: 8px;
+    padding: 9px 18px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    box-shadow: 0 0 0 0 rgba(74, 227, 181, 0.35);
+  }
+
+  .btn:hover { box-shadow: 0 0 0 4px rgba(74, 227, 181, 0.12); }
+  .btn:active { transform: translateY(1px); }
+  .btn[disabled] { opacity: 0.4; cursor: default; box-shadow: none; }
+
+  .demo-top .hint {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #5D6879;
+  }
+
+  .stage {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 108px 1fr;
+    align-items: center;
+    gap: 0;
+    padding: 54px 34px;
+    min-height: 236px;
+  }
+
+  .node {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 20px 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(13, 19, 28, 0.9);
+    width: 100%;
+    max-width: 232px;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  #nodeA { justify-self: end; }
+  #nodeB { justify-self: start; }
+
+  .node.on {
+    border-color: rgba(74, 227, 181, 0.45);
+    box-shadow: 0 0 32px -12px rgba(74, 227, 181, 0.55);
+  }
+
+  .node-ic {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 10px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    color: var(--ash);
+    transition: color 0.4s ease, border-color 0.4s ease;
+  }
+
+  .node.on .node-ic { color: var(--signal); border-color: rgba(74, 227, 181, 0.3); }
+
+  .node-n { font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+  .node-os { font-family: var(--mono); font-size: 10.5px; color: var(--ash); margin-top: 3px; }
+
+  .wire {
+    position: relative;
+    height: 2px;
+    align-self: center;
+  }
+
+  .wire::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.13) 0 6px,
+      transparent 6px 12px
+    );
+  }
+
+  .wire.live::before {
+    background: repeating-linear-gradient(
+      to right,
+      rgba(74, 227, 181, 0.42) 0 6px,
+      transparent 6px 12px
+    );
+  }
+
+  .packet {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    margin-top: -5px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 14px 2px rgba(242, 193, 78, 0.65);
+    opacity: 0;
+    transform: translateX(0);
+  }
+
+  .packet.run {
+    animation: shoot 1.1s linear infinite;
+  }
+
+  @keyframes shoot {
+    0% { opacity: 0; transform: translateX(0) scale(0.7); }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(98px) scale(1); }
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .step {
+    padding: 15px 14px 17px;
+    border-right: 1px solid var(--line-soft);
+    transition: background 0.35s ease;
+  }
+
+  .step:last-child { border-right: 0; }
+
+  .step.on {
+    background: rgba(74, 227, 181, 0.055);
+    box-shadow: inset 0 2px 0 rgba(74, 227, 181, 0.75);
+  }
+
+  .step-k {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #4E5969;
+    letter-spacing: 0.1em;
+    margin-bottom: 7px;
+    transition: color 0.35s ease;
+  }
+
+  .step.on .step-k { color: var(--signal); }
+
+  .step-t {
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #8D97A6;
+    transition: color 0.35s ease;
+  }
+
+  .step.on .step-t { color: var(--paper); }
+
+  .step-d { font-size: 11.5px; line-height: 1.5; color: #5D6879; }
+
+  .console {
+    border-top: 1px solid var(--line-soft);
+    background: #060910;
+    padding: 16px 18px 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.9;
+    color: #6B7788;
+    min-height: 196px;
+  }
+
+  .console div { white-space: pre-wrap; word-break: break-word; }
+  .console .ok { color: var(--signal); }
+  .console .gd { color: var(--gold); }
+  .console .dim { color: #45505F; }
+
+  .cursor::after {
+    content: "▍";
+    color: var(--signal);
+    animation: blink 1.1s step-end infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ── platforms ─────────────────────────────────────── */
+
+  .plats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .plat {
+    background: var(--panel);
+    padding: 30px 26px 32px;
+    transition: background 0.3s ease;
+  }
+
+  .plat:hover { background: #0F1724; }
+
+  .plat-k {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+
+  .plat-k svg { color: var(--ash); }
+
+  .plat h3 {
+    margin: 0 0 6px;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .plat-stack {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--signal);
+    margin-bottom: 16px;
+  }
+
+  .plat p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #98A3B3;
+  }
+
+  /* ── capability grid ───────────────────────────────── */
+
+  .caps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px 40px;
+    margin-top: 8px;
+  }
+
+  .cap {
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+
+  .cap h4 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cap h4::before {
+    content: "";
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex: none;
+  }
+
+  .cap p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #97A2B2;
+  }
+
+  /* ── story ─────────────────────────────────────────── */
+
+  .story {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .story-h {
+    font-size: clamp(28px, 3.6vw, 44px);
+    line-height: 1.14;
+    letter-spacing: -0.04em;
+    font-weight: 780;
+    margin: 0 0 20px;
+  }
+
+  .story-h span {
+    display: block;
+    color: #586373;
+  }
+
+  .story-h .cut {
+    color: #E4674F;
+  }
+
+  .story-meta {
+    margin: 26px 0 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: #4E5969;
+    line-height: 1.9;
+  }
+
+  .story-body p {
+    margin: 0 0 18px;
+    font-size: 15px;
+    line-height: 1.85;
+    color: #A9B4C2;
+  }
+
+  .story-body p:last-child { margin-bottom: 0; }
+
+  .story-body b {
+    color: var(--paper);
+    font-weight: 600;
+  }
+
+  .quote {
+    margin: 28px 0 0;
+    padding: 18px 22px;
+    border-left: 2px solid var(--gold);
+    background: rgba(242, 193, 78, 0.045);
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: #C8D0DC;
+  }
+
+  /* ── zeros ─────────────────────────────────────────── */
+
+  .zeros {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .zero {
+    background: var(--void);
+    padding: 30px 20px;
+    text-align: center;
+  }
+
+  .zero-n {
+    font-family: var(--mono);
+    font-size: 34px;
+    line-height: 1;
+    color: var(--gold);
+    letter-spacing: -0.03em;
+  }
+
+  .zero-l {
+    margin-top: 10px;
+    font-size: 12.5px;
+    color: var(--ash);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── download ──────────────────────────────────────── */
+
+  .dl {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 8px;
+  }
+
+  .dl-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+    text-decoration: none;
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+
+  .dl-item:hover {
+    border-color: rgba(74, 227, 181, 0.35);
+    background: #0E1622;
+  }
+
+  .dl-item .k {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .dl-item .e {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ash);
+    margin-top: 3px;
+    letter-spacing: 0.05em;
+  }
+
+  .dl-item .arrow {
+    margin-left: auto;
+    color: var(--ash);
+    font-family: var(--mono);
+    font-size: 14px;
+    transition: color 0.25s ease, transform 0.25s ease;
+  }
+
+  .dl-item:hover .arrow {
+    color: var(--signal);
+    transform: translateY(2px);
+  }
+
+  .dl-item.pending {
+    opacity: 0.55;
+    border-style: dashed;
+  }
+
+  .dl-item.pending .arrow {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+  }
+
+  .dl-note {
+    margin: 18px 0 0;
+    font-size: 12.5px;
+    color: #5D6879;
+    font-family: var(--mono);
+  }
+
+  /* ── footer ────────────────────────────────────────── */
+
+  .foot {
+    border-top: 1px solid var(--line-soft);
+    padding-top: 40px;
+    padding-bottom: 56px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+
+  .foot-l {
+    font-size: 13px;
+    color: var(--ash);
+    line-height: 1.8;
+  }
+
+  .foot-l b { color: #C3CCD9; font-weight: 600; }
+
+  .gh {
+    display: inline-block;
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    color: var(--signal);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(74, 227, 181, 0.35);
+    padding-bottom: 2px;
+    transition: border-color 0.25s ease, color 0.25s ease;
+  }
+
+  .gh:hover {
+    color: #6FF0C7;
+    border-bottom-color: var(--signal);
+  }
+
+  .foot-r {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #4E5969;
+    letter-spacing: 0.06em;
+    text-align: right;
+  }
+
+  /* ── reveal ────────────────────────────────────────── */
+  /* 默认可见：只有滚动到视口外的内容才由 JS 加上 .rv-hidden 再淡入，
+     这样即使脚本没跑，页面内容也永远读得到。 */
+
+  .rv {
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .rv-hidden {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  /* ── responsive ────────────────────────────────────── */
+
+  @media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; gap: 48px; padding-top: 64px; padding-bottom: 60px; }
+    .story { grid-template-columns: 1fr; gap: 32px; }
+    .caps { grid-template-columns: repeat(2, 1fr); }
+    .plats { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .step { border-bottom: 1px solid var(--line-soft); }
+    .zeros { grid-template-columns: repeat(2, 1fr); }
+    .dl { grid-template-columns: 1fr; }
+    .sec-head { grid-template-columns: 1fr; gap: 18px; align-items: start; }
+  }
+
+  @media (max-width: 620px) {
+    .wrap, .nav-in { padding-left: 20px; padding-right: 20px; }
+    .sec { padding-top: 64px; padding-bottom: 64px; }
+    .facts { gap: 24px; flex-wrap: wrap; }
+    .caps { grid-template-columns: 1fr; }
+    .stage { grid-template-columns: 1fr 74px 1fr; padding: 40px 16px; min-height: 210px; }
+    .node { padding: 14px 8px; }
+    .node-n { font-size: 11.5px; }
+    .node-ic { width: 32px; height: 32px; margin-bottom: 8px; }
+    @keyframes shoot {
+      0% { opacity: 0; transform: translateX(0) scale(0.7); }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(68px) scale(1); }
+    }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .step { border-right: 1px solid var(--line-soft); }
+    .console { font-size: 11px; }
+    .nav-tag { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+    .rv-hidden { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-in">
+    <svg class="mark" viewBox="0 0 108 108" aria-hidden="true">
+      <rect width="108" height="108" rx="24" fill="#000"/>
+      <ellipse cx="54" cy="55" rx="31" ry="11" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1.8"/>
+      <path d="M54,24 C56.5,42 66,49.5 80,52 C66,54.5 56.5,62 54,80 C51.5,62 42,54.5 28,52 C42,49.5 51.5,42 54,24 Z" fill="#F2C14E"/>
+      <path d="M76,22 C77,28.5 80,31 86,32 C80,33 77,35.5 76,42 C75,35.5 72,33 66,32 C72,31 75,28.5 76,22 Z" fill="#FFE9B0"/>
+    </svg>
+    <span class="brand">发来</span>
+    <span class="nav-tag">WorkBuddy <b>1024</b> 造物挑战 · 参赛作品</span>
+  </div>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <header class="wrap hero">
+    <div>
+      <p class="eyebrow">局域网直传 · 安卓 / 鸿蒙 / Windows</p>
+      <h1>两台设备，<br><em>一根网线都不用。</em></h1>
+      <p class="lede">
+        同一个 WiFi 下，手机和电脑直接互发照片、视频、任意文件。
+        <strong>不经过任何服务器</strong>，不限速，不压缩，不留副本。
+      </p>
+      <div class="facts">
+        <div>
+          <div class="fact-n">0<span>台</span></div>
+          <div class="fact-l">服务器</div>
+        </div>
+        <div>
+          <div class="fact-n">3<span>个</span></div>
+          <div class="fact-l">原生平台</div>
+        </div>
+        <div>
+          <div class="fact-n">32<span>KB</span></div>
+          <div class="fact-l">恒定内存块</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" aria-label="界面演示（模拟数据）">
+      <div class="panel-bar">
+        <span class="dot"></span>
+        <span>发来 · 传输</span>
+        <span class="sp">界面演示</span>
+      </div>
+      <div class="panel-body">
+        <div class="self">
+          <div>
+            <div class="self-ip">192.168.50.82</div>
+            <div class="self-name" style="margin-top:4px">本机 · vivo X Fold 3</div>
+          </div>
+          <div class="self-name">Android 14</div>
+        </div>
+
+        <ul class="peers">
+          <li><span class="d"></span>DESKTOP-8F2A<span class="ip">192.168.50.31</span></li>
+          <li><span class="d"></span>MatePad Air<span class="ip">192.168.50.44</span></li>
+        </ul>
+
+        <div class="sending">
+          <div class="sending-top">
+            <span class="fn">海边_4K.mp4</span>
+            <span class="pct">68%</span>
+          </div>
+          <div class="track"><i></i></div>
+          <div class="sending-meta">
+            <span>96.4 MB/s</span>
+            <span>剩余 4 秒</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- DEMO -->
+  <section class="wrap sec" id="how">
+    <div class="sec-head rv">
+      <h2>一次传输，五步。<br>全部发生在你的路由器里。</h2>
+      <p class="sec-note">
+        点「开始一次传输」，走一遍真实的协议流程。整个过程没有任何一行请求发往互联网——两端的 IP 都在 192.168 段里。
+      </p>
+    </div>
+
+    <div class="demo rv">
+      <div class="demo-top">
+        <span class="demo-title">协议回放</span>
+        <button class="btn" id="play" type="button">开始一次传输</button>
+        <span class="hint">UDP 47800 · TCP 47801</span>
+      </div>
+
+      <div class="stage">
+        <div class="node" id="nodeA">
+          <div class="node-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>
+          </div>
+          <div class="node-n">vivo X Fold 3</div>
+          <div class="node-os">192.168.50.82</div>
+        </div>
+
+        <div class="wire" id="wire">
+          <span class="packet" id="packet"></span>
+        </div>
+
+        <div class="node" id="nodeB">
+          <div class="node-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="4" width="19" height="12" rx="1.8"/><path d="M8 20h8M12 16v4"/></svg>
+          </div>
+          <div class="node-n">DESKTOP-8F2A</div>
+          <div class="node-os">192.168.50.31</div>
+        </div>
+      </div>
+
+      <div class="steps" id="steps">
+        <div class="step" data-i="0">
+          <div class="step-k">01</div>
+          <div class="step-t">广播「我在」</div>
+          <div class="step-d">每 2 秒一次，带上自己的 TCP 端口。</div>
+        </div>
+        <div class="step" data-i="1">
+          <div class="step-k">02</div>
+          <div class="step-t">对方出现在列表</div>
+          <div class="step-d">6 秒没声音就标离线，也能手输 IP。</div>
+        </div>
+        <div class="step" data-i="2">
+          <div class="step-k">03</div>
+          <div class="step-t">TCP 连接</div>
+          <div class="step-d">说清几个文件、多大，对方点了才开工。</div>
+        </div>
+        <div class="step" data-i="3">
+          <div class="step-k">04</div>
+          <div class="step-t">字节流</div>
+          <div class="step-d">32KB 一块，内存占用恒定。</div>
+        </div>
+        <div class="step" data-i="4">
+          <div class="step-k">05</div>
+          <div class="step-t">落盘 + ACK</div>
+          <div class="step-d">先写 .part，收满才进相册。</div>
+        </div>
+      </div>
+
+      <div class="console" id="console" aria-live="polite">
+        <div class="dim">// 等待开始 —— 下面每一行都来自真实协议，不是编的</div>
+        <div class="cursor"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLATFORMS -->
+  <section class="wrap sec">
+    <div class="sec-head rv">
+      <h2>三端原生，不是三套壳。</h2>
+      <p class="sec-note">
+        安卓、鸿蒙、Windows 各自用本平台的原生技术栈写，共享同一份协议。所以传输速度是平台能给到的上限，不是 WebView 的上限。
+      </p>
+    </div>
+
+    <div class="plats rv">
+      <article class="plat">
+        <div class="plat-k">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>
+        </div>
+        <h3>Android</h3>
+        <div class="plat-stack">Kotlin · Jetpack Compose</div>
+        <p>折叠屏展开合拢不重建 Activity，传输不中断。前台 Service + WakeLock，锁屏照传。手机三 Tab、展开态 NavigationRail、平板三列网格。</p>
+      </article>
+
+      <article class="plat">
+        <div class="plat-k">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="7" width="12" height="14" rx="2"/><path d="M7 3.5h11a2 2 0 0 1 2 2v11"/></svg>
+        </div>
+        <h3>HarmonyOS</h3>
+        <div class="plat-stack">ArkTS · ArkUI</div>
+        <p>用 @kit.NetworkKit 做 UDP 发现，photoAccessHelper 直接落相册，文档走 DocumentViewPicker 进公共下载目录。免权限，不弹多余授权。</p>
+      </article>
+
+      <article class="plat">
+        <div class="plat-k">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="4" width="19" height="12" rx="1.8"/><path d="M8 20h8M12 16v4"/></svg>
+        </div>
+        <h3>Windows</h3>
+        <div class="plat-stack">Tauri · Rust · React</div>
+        <p>发现与 TCP 服务跑在 Rust 侧，不经过 JS 桥。安装包十几 MB，不是动辄上百兆的 Electron。托盘常驻，随开随收。</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- CAPABILITIES -->
+  <section class="wrap sec">
+    <div class="sec-head rv">
+      <h2>传一个 8GB 的视频，中途去接个电话。</h2>
+      <p class="sec-note">这些不是待办清单，是已经跑在真机上的行为。</p>
+    </div>
+
+    <div class="caps rv">
+      <div class="cap">
+        <h4>断点续传</h4>
+        <p>用 transferId 标识批次，接收端返回每个文件已收的 offset。重发同一批次，已完成的跳过，未完成的从断点接着写。</p>
+      </div>
+      <div class="cap">
+        <h4>暂停与继续</h4>
+        <p>暂停即停止推流但保持连接，两端进度冻结、速度归零。继续后从那个字节接着发，不用重来。</p>
+      </div>
+      <div class="cap">
+        <h4>白名单免确认</h4>
+        <p>自己家里的设备加进白名单，以后发过去直接落盘，不弹窗。陌生设备仍然要你点一下「接受」。</p>
+      </div>
+      <div class="cap">
+        <h4>网络容错</h4>
+        <p>接收端口被占用就从 47801 自动往后挪，实际端口靠广播告诉对方。WiFi 断了立刻判失败并提示，临时文件留着等你续。</p>
+      </div>
+      <div class="cap">
+        <h4>日志可查可删</h4>
+        <p>每次传输的时间、方向、对方、文件名、大小、耗时、均速都落本地。左滑删单条，一键清空，不上传任何地方。</p>
+      </div>
+      <div class="cap">
+        <h4>多屏自适应</h4>
+        <p>按窗口宽度分档：手机底部三 Tab、折叠展开和横屏走左侧 NavigationRail 两列、平板三列限宽居中。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section class="wrap sec">
+    <div class="story">
+      <div class="rv">
+        <h2 class="story-h">广播能过，<br><span class="cut">握手过不去。</span></h2>
+        <p class="story-meta">2026-10-18 · 酒店 WiFi · 一次失败的真机联调</p>
+      </div>
+      <div class="story-body rv">
+        <p>
+          在酒店 WiFi 上试的时候，界面明明列着对方设备，点发送却停在 0/12，二十一秒后弹出 <b>os error 10060</b>。
+        </p>
+        <p>
+          查下去发现：对方每 2 秒的 UDP 广播<b>持续正常到达</b>，但 ARP 表里对方 MAC 全是 0，ping 不通，TCP 47801 超时。广播是二层泛洪，能过；ARP 应答和 TCP SYN 是单播，被 AP 扔了。
+        </p>
+        <p>
+          这就是路由器上的<b>客户端隔离</b>。代码一行都改不了，换成手机热点，一次通。
+        </p>
+        <blockquote class="quote">
+          「能在列表里看见」不等于「能连上」。这句话后来写进了设备状态提示里——比让用户对着一个转圈图标猜半小时强。
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- ZEROS -->
+  <section class="sec" style="padding:0;border-top:0">
+    <div class="zeros rv">
+      <div class="zero"><div class="zero-n">0</div><div class="zero-l">服务器</div></div>
+      <div class="zero"><div class="zero-n">0</div><div class="zero-l">账号</div></div>
+      <div class="zero"><div class="zero-n">0</div><div class="zero-l">云端副本</div></div>
+      <div class="zero"><div class="zero-n">0</div><div class="zero-l">流量消耗</div></div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section class="wrap sec">
+    <div class="sec-head rv">
+      <h2>装上，然后忘掉它。</h2>
+      <p class="sec-note">
+        三端互相都能传。装完只要保证两台设备连的是同一个 WiFi。
+      </p>
+    </div>
+
+    <div class="dl rv">
+      <a class="dl-item" href="./downloads/falai-android.apk">
+        <div>
+          <div class="k">Android</div>
+          <div class="e">APK · Android 13+</div>
+        </div>
+        <span class="arrow">↓</span>
+      </a>
+      <a class="dl-item" href="./downloads/falai-windows.exe">
+        <div>
+          <div class="k">Windows</div>
+          <div class="e">EXE · Windows 10/11 x64</div>
+        </div>
+        <span class="arrow">↓</span>
+      </a>
+      <a class="dl-item" href="./downloads/falai-harmony.hap">
+        <div>
+          <div class="k">HarmonyOS</div>
+          <div class="e">HAP · HarmonyOS NEXT</div>
+        </div>
+        <span class="arrow">↓</span>
+      </a>
+    </div>
+
+    <p class="dl-note">首次在 Windows 发送时，系统会弹防火墙授权，需要允许「专用网络」入站。</p>
+  </section>
+
+</main>
+
+<footer class="wrap foot">
+  <div class="foot-l">
+    <b>发来</b> · 局域网文件互传<br>
+    WorkBuddy「1024 造物挑战」程序员节应用创作大赛 参赛作品<br>
+    <a class="gh" href="https://github.com/jhtaiwwy/falai-transfer" target="_blank" rel="noopener">三端源码在 GitHub ↗</a>
+  </div>
+  <div class="foot-r">
+    NO SERVER<br>NO ACCOUNT<br>JUST LAN
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ── reveal on scroll ─────────────────────────────── */
+  var rv = document.querySelectorAll(".rv");
+  if ("IntersectionObserver" in window && !reduceMotion) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.remove("rv-hidden");
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.01, rootMargin: "0px 0px 140px 0px" });
+
+    rv.forEach(function (el) {
+      // 只在首屏之外的元素上挂动画，首屏内容直接显示
+      if (el.getBoundingClientRect().top >= window.innerHeight) {
+        el.classList.add("rv-hidden");
+        io.observe(el);
+      }
+    });
+  }
+
+  /* ── protocol replay ──────────────────────────────── */
+  var playBtn = document.getElementById("play");
+  var stepsEl = document.getElementById("steps");
+  var stepNodes = stepsEl ? Array.prototype.slice.call(stepsEl.children) : [];
+  var consoleEl = document.getElementById("console");
+  var packet = document.getElementById("packet");
+  var wire = document.getElementById("wire");
+  var nodeA = document.getElementById("nodeA");
+  var nodeB = document.getElementById("nodeB");
+
+  var script = [
+    {
+      log: '<span class="dim">[47800]</span> → 广播：{"app":"FT","name":"vivo X Fold 3","tcpPort":47801}',
+      wait: 1100
+    },
+    {
+      log: '<span class="dim">[47800]</span> ← DESKTOP-8F2A 在线 <span class="dim">192.168.50.31</span>',
+      wait: 1000
+    },
+    {
+      log: '<span class="dim">[47801]</span> TCP 已连接 · 发请求头：3 个文件 / 1.18 GB',
+      wait: 1100
+    },
+    {
+      log: '<span class="dim">[47801]</span> 对方已接受 · <span class="gd">offset 0</span> 开始推流',
+      wait: 900,
+      stream: true
+    },
+    {
+      log: '<span class="dim">[47801]</span> 已完成 3/3 <span class="ok">ACK</span> · 均速 92.7 MB/s · 耗时 13.1s',
+      wait: 1200
+    }
+  ];
+
+  var running = false;
+
+  function sleep(ms) {
+    return new Promise(function (r) { setTimeout(r, ms); });
+  }
+
+  function clearConsole() {
+    consoleEl.innerHTML = '<div class="cursor"></div>';
+  }
+
+  function pushLog(html) {
+    var cursor = consoleEl.querySelector(".cursor");
+    var line = document.createElement("div");
+    line.innerHTML = html;
+    if (cursor) consoleEl.insertBefore(line, cursor);
+    else consoleEl.appendChild(line);
+    if (consoleEl.children.length > 11) {
+      consoleEl.removeChild(consoleEl.firstElementChild);
+    }
+  }
+
+  function resetStage() {
+    stepNodes.forEach(function (s) { s.classList.remove("on"); });
+    if (nodeA) nodeA.classList.remove("on");
+    if (nodeB) nodeB.classList.remove("on");
+    if (wire) wire.classList.remove("live");
+    if (packet) packet.classList.remove("run");
+  }
+
+  function activate(i) {
+    stepNodes.forEach(function (s, idx) {
+      s.classList.toggle("on", idx === i);
+    });
+  }
+
+  async function run() {
+    if (running) return;
+    running = true;
+    playBtn.disabled = true;
+    playBtn.textContent = "回放中…";
+    resetStage();
+    clearConsole();
+
+    for (var i = 0; i < script.length; i++) {
+      var s = script[i];
+      activate(i);
+
+      if (i === 0) { if (nodeA) nodeA.classList.add("on"); }
+      if (i === 1) { if (nodeB) nodeB.classList.add("on"); }
+      if (i === 2) {
+        if (wire) wire.classList.add("live");
+        if (packet) packet.classList.add("run");
+      }
+
+      if (s.stream) {
+        // 先记「对方已接受」，再逐块推进字节计数
+        pushLog(s.log);
+        var total = 3;
+        for (var n = 1; n <= total; n++) {
+          pushLog('<span class="dim">[47801]</span> 文件 ' + n + '/3 · 已发送 <span class="gd">' +
+            (n === 1 ? "412" : n === 2 ? "968" : "1180") + ' MB</span>');
+          await sleep(reduceMotion ? 60 : 320);
+        }
+      } else {
+        pushLog(s.log);
+      }
+
+      await sleep(reduceMotion ? 80 : s.wait);
+    }
+
+    activate(4);
+    if (packet) packet.classList.remove("run");
+    if (wire) wire.classList.remove("live");
+
+    pushLog('<span class="ok">→ 完成</span> <span class="dim">· 全程 0 字节经过互联网</span>');
+
+    running = false;
+    playBtn.disabled = false;
+    playBtn.textContent = "再看一遍";
+  }
+
+  if (playBtn) {
+    playBtn.addEventListener("click", run);
+    // 滚到可视区域时自动播一次
+    if ("IntersectionObserver" in window && !reduceMotion) {
+      var played = false;
+      var pio = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting && !played) {
+            played = true;
+            setTimeout(run, 500);
+            pio.disconnect();
+          }
+        });
+      }, { threshold: 0.4 });
+      pio.observe(document.querySelector(".demo"));
+    }
+  }
+
+  /* ── download availability ────────────────────────── */
+  // 安装包还没放进来时，卡片显示「待补」，避免评委点开是 404。
+  // 文件放进 site/downloads/ 后自动恢复正常，不需要改代码。
+  if (location.protocol === "http:" || location.protocol === "https:") {
+    document.querySelectorAll(".dl-item").forEach(function (a) {
+      fetch(a.getAttribute("href"), { method: "HEAD" })
+        .then(function (r) {
+          if (!r.ok) throw new Error("missing");
+        })
+        .catch(function () {
+          a.classList.add("pending");
+          var arrow = a.querySelector(".arrow");
+          if (arrow) arrow.textContent = "待补";
+        });
+    });
+  }
+
+  /* ── honest byte counter in hero ──────────────────── */
+  var pctEl = document.querySelector(".sending-top .pct");
+  var trackEl = document.querySelector(".track i");
+  if (pctEl && trackEl && !reduceMotion) {
+    var p = 68;
+    setInterval(function () {
+      p = p >= 99 ? 68 : p + 1;
+      pctEl.textContent = p + "%";
+      trackEl.style.width = p + "%";
+    }, 900);
+  }
+})();
+</script>
+</body>
+</html>
